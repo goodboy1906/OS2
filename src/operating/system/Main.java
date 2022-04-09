@@ -38,8 +38,6 @@ public class Main {
 
         System.out.println("\nStart encrypting...\n");
 
-
-
         long start = System.currentTimeMillis();
 
         for (int i = 0; i < hashCount; i++) {
@@ -76,23 +74,47 @@ public class Main {
         System.out.print("Enter the thread number (1 - " + hashCount + ") >>> ");
         int threadCount = scanner.nextInt();
 
+        int threadCountDifference = hashCount - threadCount;
+
         System.out.println("\nStart encrypting...\n");
 
         long start = System.currentTimeMillis();
 
-        for (int i = 0; i < threadCount; i++) {
-          threadArray[i] = new MultiThreadedMode(i + 1, hashArray[i]);
-          threadArray[i].start();
-        }
+        if (threadCountDifference == 0) {
+          for (int i = 0; i < threadCount; i++) {
+            threadArray[i] = new MultiThreadedMode(i + 1, hashArray[i]);
+            threadArray[i].start();
+          }
 
-        for (int i = 0; i < threadCount; i++) {
-          threadArray[i].join();
-        }
+          for (int i = 0; i < threadCount; i++) {
+            threadArray[i].join();
+          }
 
-        long finish = System.currentTimeMillis();
-        long elapsed = finish - start;
-        System.out.println("\nspent " + elapsed + " ms\n");
-        menu();
+          long finish = System.currentTimeMillis();
+          long elapsed = finish - start;
+          System.out.println("\nspent " + elapsed + " ms\n");
+
+          menu();
+        } else {
+          for (int i = 0; i < threadCount - 1; i++) {
+            threadArray[i] = new MultiThreadedMode(i + 1, hashArray[i]);
+            threadArray[i].start();
+          }
+
+          for (int i = threadCount - 1; i < hashCount; i++) {
+            String password = SingleThreadedMode.encryptHash(hashArray[i]);
+            System.out.println((i + 1) + ". " + password);
+          }
+
+          for (int i = 0; i < threadCount - 1; i++) {
+            threadArray[i].join();
+          }
+
+          long finish = System.currentTimeMillis();
+          long elapsed = finish - start;
+          System.out.println("\nspent " + elapsed + " ms\n");
+          menu();
+        }
       }
       default:
         System.out.println("\nWrong argument!\n");
