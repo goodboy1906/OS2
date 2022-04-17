@@ -1,6 +1,7 @@
 package operating.system;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -54,9 +55,10 @@ public class Main {
       case 2: {
         //Multi
 
+        ArrayList<MultiThreadedMode> threadArray = new ArrayList<MultiThreadedMode>();
+        ArrayList<String> hashArray = new ArrayList<String>();
+
         int hashCount = 0;
-        String[] hashArray = new String[10];
-        MultiThreadedMode[] threadArray = new MultiThreadedMode[10];
 
         for (; ; ) {
           System.out.print((hashCount + 1) + ". ");
@@ -67,54 +69,21 @@ public class Main {
             break;
           }
 
-          hashArray[hashCount] = hash;
+          hashArray.add(hash);
           hashCount++;
         }
 
-        System.out.print("Enter the thread number (1 - " + hashCount + ") >>> ");
+        System.out.println("Enter the thread number >>> ");
         int threadCount = scanner.nextInt();
 
-        int threadCountDifference = hashCount - threadCount;
-
         System.out.println("\nStart encrypting...\n");
-
         long start = System.currentTimeMillis();
 
-        if (threadCountDifference == 0) {
-          for (int i = 0; i < threadCount; i++) {
-            threadArray[i] = new MultiThreadedMode(i + 1, hashArray[i]);
-            threadArray[i].start();
-          }
+        long finish = System.currentTimeMillis();
+        long elapsed = finish - start;
+        System.out.println("\nspent " + elapsed + " ms\n");
 
-          for (int i = 0; i < threadCount; i++) {
-            threadArray[i].join();
-          }
-
-          long finish = System.currentTimeMillis();
-          long elapsed = finish - start;
-          System.out.println("\nspent " + elapsed + " ms\n");
-
-          menu();
-        } else {
-          for (int i = 0; i < threadCount - 1; i++) {
-            threadArray[i] = new MultiThreadedMode(i + 1, hashArray[i]);
-            threadArray[i].start();
-          }
-
-          for (int i = threadCount - 1; i < hashCount; i++) {
-            String password = SingleThreadedMode.encryptHash(hashArray[i]);
-            System.out.println((i + 1) + ". " + password);
-          }
-
-          for (int i = 0; i < threadCount - 1; i++) {
-            threadArray[i].join();
-          }
-
-          long finish = System.currentTimeMillis();
-          long elapsed = finish - start;
-          System.out.println("\nspent " + elapsed + " ms\n");
-          menu();
-        }
+        menu();
       }
       default:
         System.out.println("\nWrong argument!\n");
